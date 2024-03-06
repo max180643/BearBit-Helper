@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Bearbit - Helper</title>
+    <link rel="stylesheet" type="text/css" href="popup.css" />
+  </head>
+  <body>
+    <div class="container">
+      <div id="banner">
+        <img class="logo" src="icons/bearbit_helper_icon128.png" alt="Logo" />
+        <div class="text">
+          <span class="text-lg font-bold">Bearbit - Helper</span>
+        </div>
+      </div>
+      <div id="options">
+        <span class="text-xs font-bold">Options</span>
+        <!-- options item -->
+        <div class="item">
+          <span class="text-sm">Auto Thanks</span>
+          <label class="switch">
+            <input type="checkbox" id="toggleAutoThanks" />
+            <span class="slider"></span>
+          </label>
+        </div>
+        <div class="item">
+          <span class="text-sm">Screenshot Preview</span>
+          <label class="switch">
+            <input type="checkbox" id="toggleScreenshot" />
+            <span class="slider"></span>
+          </label>
+        </div>
+      </div>
+    </div>
+    <script src="popup.js"></script>
+  </body>
+</html>
