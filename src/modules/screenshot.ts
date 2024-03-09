@@ -28,11 +28,15 @@ function enableScreenshot() {
           newCell.classList.add("colhead");
           newCell.textContent = "รูปภาพตัวอย่าง";
         } else {
-          const ss = row.querySelector('[title="รูปภาพตัวอย่าง"], [title="รูปภาพ"]') as HTMLElement;
-          const extension = (ss.parentNode as HTMLAnchorElement).href.split(".").pop() ?? "";
+          const cameraIcon = row.querySelector('[title="รูปภาพตัวอย่าง"], [title="รูปภาพ"]') as HTMLElement;
+          let extension = "";
+
+          if (cameraIcon) {
+            extension = (cameraIcon.parentNode as HTMLAnchorElement).href.split(".").pop() ?? ""
+          }
 
           if (allowedExtensions.indexOf(extension) !== -1) {
-            const img = createImageElement((ss.parentNode as HTMLAnchorElement).href, "120px", "150px");
+            const img = createImageElement((cameraIcon.parentNode as HTMLAnchorElement).href, "120px", "150px");
             newCell.appendChild(img);
           } else {
             const img = createImageElement("https://i.imgur.com/eScU17W.png", "64px", "64px");
