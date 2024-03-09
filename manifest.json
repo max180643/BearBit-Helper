@@ -2,8 +2,8 @@
   "manifest_version": 3,
   "name": "BearBit Helper",
   "description": "Extension for 'bearbit.co' - Auto Thank, Screenshot Preview",
-  "version": "1.0",
-  "author": "CHNWT.DEV",
+  "version": "1.0.0",
+  "author": "CHNWT",
   "permissions": ["storage"],
   "icons": {
     "16": "icons/bearbit_helper_icon16.png",
@@ -22,6 +22,7 @@
       "48": "icons/bearbit_helper_icon48.png",
       "128": "icons/bearbit_helper_icon128.png"
     },
-    "default_popup": "popup.html"
+    "default_popup": "popup.html",
+    "default_title": "BearBit Helper"
   }
 }
