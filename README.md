@@ -4,7 +4,7 @@ Browser extension (Chrome, Edge) for "[Bearbit.co](https://bearbit.co/)" website
 
 ## Overview
 
-<img src="README/ss1.png" alt="ss1" width="250"/>
+<img src="README/ss.png" alt="Extension UI" width="250"/>
 
 ## Feature
 
