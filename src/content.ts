@@ -1,5 +1,6 @@
 import { enableAutoThanks } from "./modules/thanks";
 import { enableScreenshot, disableScreenshot } from "./modules/screenshot";
+import { enableBlurNsfw, disableBlurNsfw } from "./modules/nsfw";
 
 function autoThanksHandler() {
   chrome.storage.sync.get("autoThanksEnabled", ({ autoThanksEnabled }) => {
@@ -11,9 +12,20 @@ function autoThanksHandler() {
 }
 
 function screenshotHandler() {
-  chrome.storage.sync.get("screenshotEnabled", ({ screenshotEnabled }) => {
-    const enabled = screenshotEnabled || false;
-    enabled ? enableScreenshot() : disableScreenshot();
+  chrome.storage.sync.get(
+    ["screenshotEnabled", "blurNsfwEnabled"],
+    ({ screenshotEnabled, blurNsfwEnabled }) => {
+      const enabled = screenshotEnabled || false;
+      const enabledBlur = blurNsfwEnabled || false;
+      enabled ? enableScreenshot(enabledBlur) : disableScreenshot();
+    }
+  );
+}
+
+function blurNsfwHandler() {
+  chrome.storage.sync.get("blurNsfwEnabled", ({ blurNsfwEnabled }) => {
+    const enabled = blurNsfwEnabled || false;
+    enabled ? enableBlurNsfw() : disableBlurNsfw();
   });
 }
 
@@ -26,11 +38,16 @@ chrome.storage.onChanged.addListener(function (changes, namespace) {
   if (changes.screenshotEnabled) {
     screenshotHandler();
   }
+
+  if (changes.blurNsfwEnabled) {
+    blurNsfwHandler();
+  }
 });
 
 function main() {
   autoThanksHandler();
   screenshotHandler();
+  blurNsfwHandler();
 }
 
 main();

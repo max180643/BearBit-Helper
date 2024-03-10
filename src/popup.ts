@@ -1,4 +1,4 @@
-import './popup.css';
+import "./popup.css";
 
 document.addEventListener("DOMContentLoaded", () => {
   // Function to handle toggle settings
@@ -14,9 +14,12 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   }
 
-  // AutoThanks Toggle
+  // AutoThanks toggle
   toggleSetting("autoThanksEnabled", "toggleAutoThanks");
 
   // Screenshot toggle
   toggleSetting("screenshotEnabled", "toggleScreenshot");
+
+  // Blur NSFW toggle
+  toggleSetting("blurNsfwEnabled", "toggleBlurNsfw");
 });
