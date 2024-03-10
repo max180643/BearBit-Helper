@@ -14,14 +14,12 @@ function createImageElement(
   return img;
 }
 
-function insertScreenshotCellInTable(tableSelector: string) {
-  const table = document.querySelector(tableSelector) as HTMLTableElement;
-
+function insertScreenshotCellInTable(table: HTMLTableElement) {
   if (table) {
     for (let i = 0, row; (row = table.rows[i]); i++) {
       const cellIndex = 1;
       const newCell = row.insertCell(cellIndex);
-      const siblingCell = newCell.nextElementSibling as HTMLElement;
+      const siblingCell = newCell.nextSibling as HTMLElement;
 
       newCell.setAttribute("bearbit-helper", "screenshot");
       newCell.setAttribute("width", "120");
@@ -74,20 +72,21 @@ function insertScreenshotCellInTable(tableSelector: string) {
 
 function enableScreenshot(blurNsfw: boolean) {
   const path = window.location.pathname;
-  if (path === "/" || path === "/index.php") {
-    insertScreenshotCellInTable(
-      "body > table.mainouter > tbody > tr:nth-child(3) > td > table > tbody > tr > td > table:nth-child(6)"
-    );
-  }
+  if (
+    path === "/" ||
+    path === "/index.php" ||
+    path === "/viewno18sb.php" ||
+    path === "/viewbrsb.php"
+  ) {
+    const table = document.querySelector(
+      '[title="รูปภาพตัวอย่าง"], [title="รูปภาพ"]'
+    )?.parentNode?.parentNode?.parentNode?.parentNode?.parentNode;
 
-  if (path === "/viewno18sb.php" || path === "/viewbrsb.php") {
-    insertScreenshotCellInTable(
-      "body > table.mainouter > tbody > tr:nth-child(3) > td > table"
-    );
-  }
+    insertScreenshotCellInTable(table as HTMLTableElement);
 
-  if (blurNsfw) {
-    enableBlurNsfw();
+    if (blurNsfw) {
+      enableBlurNsfw();
+    }
   }
 }
 
