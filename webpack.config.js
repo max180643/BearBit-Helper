@@ -6,11 +6,11 @@ const TerserPlugin = require('terser-webpack-plugin');
 module.exports = {
   entry: {
     content: './src/content.ts',
-    popup: './src/popup.ts',
+    popup: './src/popup.ts'
   },
   output: {
     filename: '[name].js',
-    path: Path.resolve(__dirname, 'dist'),
+    path: Path.resolve(__dirname, 'dist')
   },
   module: {
     rules: [
@@ -19,9 +19,9 @@ module.exports = {
         use: 'ts-loader',
         exclude: /node_modules/
       },
-      {                                       
-        test: /\.css$/,                                        
-        use: ['style-loader', 'css-loader']                                
+      {
+        test: /\.css$/,
+        use: ['style-loader', 'css-loader']
       }
     ]
   },
@@ -30,7 +30,7 @@ module.exports = {
   },
   optimization: {
     minimize: true,
-    minimizer: [new TerserPlugin()],
+    minimizer: [new TerserPlugin()]
   },
   plugins: [
     new HtmlWebpackPlugin({
@@ -42,8 +42,8 @@ module.exports = {
     new CopyPlugin({
       patterns: [
         { from: 'public/icons', to: 'icons' },
-        { from: 'manifest.json', to: 'manifest.json' },
-      ],
+        { from: 'manifest.json', to: 'manifest.json' }
+      ]
     })
   ]
-}
+};

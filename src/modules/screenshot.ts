@@ -1,13 +1,13 @@
-import { enableBlurNsfw } from "./nsfw";
+import { enableBlurNsfw } from './nsfw';
 
-const allowedExtensions = ["jpg", "jpeg", "png", "gif"];
+const allowedExtensions = ['jpg', 'jpeg', 'png', 'gif'];
 
 function createImageElement(
   src: string,
   maxWidth: string,
   maxHeight: string
 ): HTMLImageElement {
-  const img = document.createElement("img");
+  const img = document.createElement('img');
   img.src = src;
   img.style.maxWidth = maxWidth;
   img.style.maxHeight = maxHeight;
@@ -21,19 +21,19 @@ function insertScreenshotCellInTable(table: HTMLTableElement) {
       const newCell = row.insertCell(cellIndex);
       const siblingCell = newCell.nextSibling as HTMLElement;
 
-      newCell.setAttribute("bearbit-helper", "screenshot");
-      newCell.setAttribute("width", "120");
-      newCell.setAttribute("align", "center");
+      newCell.setAttribute('bearbit-helper', 'screenshot');
+      newCell.setAttribute('width', '120');
+      newCell.setAttribute('align', 'center');
       newCell.setAttribute(
-        "bgcolor",
-        siblingCell.getAttribute("bgcolor") ?? ""
+        'bgcolor',
+        siblingCell.getAttribute('bgcolor') ?? ''
       );
 
       if (i === 0) {
-        newCell.classList.add("colhead");
-        newCell.textContent = "รูปภาพตัวอย่าง";
+        newCell.classList.add('colhead');
+        newCell.textContent = 'รูปภาพตัวอย่าง';
       } else {
-        let extension = "";
+        let extension = '';
 
         const cameraIcon = row.querySelector(
           '[title="รูปภาพตัวอย่าง"], [title="รูปภาพ"]'
@@ -42,28 +42,28 @@ function insertScreenshotCellInTable(table: HTMLTableElement) {
         if (cameraIcon) {
           extension =
             (cameraIcon.parentNode as HTMLAnchorElement).href
-              .split(".")
-              .pop() ?? "";
+              .split('.')
+              .pop() ?? '';
         }
 
         if (allowedExtensions.indexOf(extension) !== -1) {
           const img = createImageElement(
             (cameraIcon.parentNode as HTMLAnchorElement).href,
-            "120px",
-            "150px"
+            '120px',
+            '150px'
           );
 
           newCell.appendChild(img);
-          newCell.setAttribute("bearbit-screenshot", "preview");
+          newCell.setAttribute('bearbit-screenshot', 'preview');
         } else {
           const img = createImageElement(
-            "https://i.imgur.com/eScU17W.png",
-            "64px",
-            "64px"
+            'https://i.imgur.com/eScU17W.png',
+            '64px',
+            '64px'
           );
-          img.style.marginLeft = "10px";
+          img.style.marginLeft = '10px';
           newCell.appendChild(img);
-          newCell.setAttribute("bearbit-screenshot", "no-preview");
+          newCell.setAttribute('bearbit-screenshot', 'no-preview');
         }
       }
     }
@@ -73,10 +73,10 @@ function insertScreenshotCellInTable(table: HTMLTableElement) {
 function enableScreenshot(blurNsfw: boolean) {
   const path = window.location.pathname;
   if (
-    path === "/" ||
-    path === "/index.php" ||
-    path === "/viewno18sb.php" ||
-    path === "/viewbrsb.php"
+    path === '/' ||
+    path === '/index.php' ||
+    path === '/viewno18sb.php' ||
+    path === '/viewbrsb.php'
   ) {
     const table = document.querySelector(
       '[title="รูปภาพตัวอย่าง"], [title="รูปภาพ"]'
@@ -94,17 +94,17 @@ function disableScreenshot() {
   const path = window.location.pathname;
 
   if (
-    path === "/" ||
-    path === "/index.php" ||
-    path === "/viewno18sb.php" ||
-    path === "/viewbrsb.php"
+    path === '/' ||
+    path === '/index.php' ||
+    path === '/viewno18sb.php' ||
+    path === '/viewbrsb.php'
   ) {
     const screenshots = document.querySelectorAll(
       '[bearbit-helper="screenshot"]'
     );
 
     if (screenshots) {
-      screenshots.forEach((elem) => elem.remove());
+      screenshots.forEach(elem => elem.remove());
     }
   }
 }

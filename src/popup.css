@@ -3,8 +3,10 @@ body {
   padding: 10px;
   border: 1px solid rgb(156 163 175);
   border-radius: 4px;
-  font-family: "Helvetica", "Arial", sans-serif;
-  box-shadow: 0 1px 3px 0 rgb(0 0 0 / 0.1), 0 1px 2px -1px rgb(0 0 0 / 0.1);
+  font-family: 'Helvetica', 'Arial', sans-serif;
+  box-shadow:
+    0 1px 3px 0 rgb(0 0 0 / 0.1),
+    0 1px 2px -1px rgb(0 0 0 / 0.1);
 }
 
 .container {
@@ -42,7 +44,9 @@ body {
   height: 34px;
   width: 34px;
   border-radius: 4px;
-  box-shadow: 0 1px 3px 0 rgb(0 0 0 / 0.1), 0 1px 2px -1px rgb(0 0 0 / 0.1);
+  box-shadow:
+    0 1px 3px 0 rgb(0 0 0 / 0.1),
+    0 1px 2px -1px rgb(0 0 0 / 0.1);
 }
 
 #banner .text {
@@ -96,12 +100,14 @@ body {
   -webkit-transition: 0.4s;
   transition: 0.4s;
   border-radius: 34px;
-  box-shadow: 0 1px 3px 0 rgb(0 0 0 / 0.1), 0 1px 2px -1px rgb(0 0 0 / 0.1);
+  box-shadow:
+    0 1px 3px 0 rgb(0 0 0 / 0.1),
+    0 1px 2px -1px rgb(0 0 0 / 0.1);
 }
 
 .slider:before {
   position: absolute;
-  content: "";
+  content: '';
   height: 24px;
   width: 24px;
   left: 2px;

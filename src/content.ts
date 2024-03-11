@@ -1,9 +1,9 @@
-import { enableAutoThanks } from "./modules/thanks";
-import { enableScreenshot, disableScreenshot } from "./modules/screenshot";
-import { enableBlurNsfw, disableBlurNsfw } from "./modules/nsfw";
+import { enableAutoThanks } from './modules/thanks';
+import { enableScreenshot, disableScreenshot } from './modules/screenshot';
+import { enableBlurNsfw, disableBlurNsfw } from './modules/nsfw';
 
 function autoThanksHandler() {
-  chrome.storage.sync.get("autoThanksEnabled", ({ autoThanksEnabled }) => {
+  chrome.storage.sync.get('autoThanksEnabled', ({ autoThanksEnabled }) => {
     const enabled = autoThanksEnabled || false;
     if (enabled) {
       enableAutoThanks();
@@ -13,7 +13,7 @@ function autoThanksHandler() {
 
 function screenshotHandler() {
   chrome.storage.sync.get(
-    ["screenshotEnabled", "blurNsfwEnabled"],
+    ['screenshotEnabled', 'blurNsfwEnabled'],
     ({ screenshotEnabled, blurNsfwEnabled }) => {
       const enabled = screenshotEnabled || false;
       const enabledBlur = blurNsfwEnabled || false;
@@ -23,7 +23,7 @@ function screenshotHandler() {
 }
 
 function blurNsfwHandler() {
-  chrome.storage.sync.get("blurNsfwEnabled", ({ blurNsfwEnabled }) => {
+  chrome.storage.sync.get('blurNsfwEnabled', ({ blurNsfwEnabled }) => {
     const enabled = blurNsfwEnabled || false;
     enabled ? enableBlurNsfw() : disableBlurNsfw();
   });
