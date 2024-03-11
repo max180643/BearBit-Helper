@@ -1,7 +1,7 @@
 {
   "manifest_version": 3,
   "name": "BearBit Helper",
-  "description": "Extension for 'bearbit.co' - Auto Thank, Screenshot Preview",
+  "description": "Extension for 'bearbit.co' - Auto Thank, Screenshot Preview (กดขอบคุณอัตโนมัติ, แสดงภาพตัวอย่าง)",
   "version": "1.0.0",
   "author": "CHNWT",
   "permissions": ["storage"],
