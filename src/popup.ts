@@ -3,7 +3,7 @@ import './popup.css';
 document.addEventListener('DOMContentLoaded', () => {
   // Function to handle toggle settings
   function toggleSetting(settingKey: string, toggleElement: string): void {
-    chrome.storage.sync.get({ [settingKey]: false }, data => {
+    chrome.storage.sync.get({ [settingKey]: true }, data => {
       const toggle = document.getElementById(toggleElement) as HTMLInputElement;
       toggle.checked = data[settingKey];
 
