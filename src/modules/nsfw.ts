@@ -65,7 +65,7 @@ function disableBlurNsfw() {
 
     if (screenshots) {
       screenshots.forEach(img => {
-        var styles = window.getComputedStyle(img);
+        const styles = window.getComputedStyle(img);
         if (styles.getPropertyValue('filter')) {
           (img as HTMLImageElement).style.removeProperty('filter');
         }
