@@ -1,22 +1,16 @@
-async function enableAutoThanks() {
+import { fetchData, responseTextDecode } from '../utils/http';
+
+async function enableAutoThanks(): Promise<void> {
   const path = window.location.pathname;
   if (path === '/details.php') {
     const urlSearchParams = new URLSearchParams(window.location.search);
-    const detailsId = urlSearchParams.get('id');
+    const torrentId = urlSearchParams.get('id') ?? '';
 
     const thanksRequest = document.getElementById('saythanks');
-    if (thanksRequest) {
+    if (thanksRequest && torrentId) {
       try {
-        const response = await fetch(
-          `${window.location.origin}/ajax.php?action=say_thanks&id=${detailsId}`
-        );
-        if (!response.ok) {
-          throw new Error(`Request failed with status: ${response.status}`);
-        }
-
-        const body = new TextDecoder('TIS-620').decode(
-          new Uint8Array(await response.arrayBuffer())
-        );
+        const response = await sendThanksRequest(torrentId);
+        const body = await responseTextDecode(response, 'TIS-620');
 
         if (body.includes('กดขอบคุณ')) {
           const thanksGuideElement = document.querySelector(
@@ -39,4 +33,14 @@ async function enableAutoThanks() {
   }
 }
 
-export { enableAutoThanks };
+async function sendThanksRequest(torrentId: string): Promise<Response> {
+  try {
+    const url = `${window.location.origin}/ajax.php?action=say_thanks&id=${torrentId}`;
+    const bodyResponse = await fetchData(url);
+    return bodyResponse;
+  } catch (error) {
+    throw new Error('fail to thanks / already thanks');
+  }
+}
+
+export { enableAutoThanks, sendThanksRequest };

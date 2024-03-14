@@ -1,6 +1,10 @@
 import { enableAutoThanks } from './modules/thanks';
 import { enableScreenshot, disableScreenshot } from './modules/screenshot';
 import { enableBlurNsfw, disableBlurNsfw } from './modules/nsfw';
+import {
+  disableDownloadButton,
+  enableDownloadButton
+} from './modules/download';
 
 function autoThanksHandler() {
   chrome.storage.sync.get('autoThanksEnabled', ({ autoThanksEnabled }) => {
@@ -29,6 +33,16 @@ function blurNsfwHandler() {
   });
 }
 
+function downloadButtonHandler() {
+  chrome.storage.sync.get(
+    'downloadButtonEnable',
+    ({ downloadButtonEnable }) => {
+      const enabled = downloadButtonEnable || false;
+      enabled ? enableDownloadButton() : disableDownloadButton();
+    }
+  );
+}
+
 function storageChangedListener() {
   // Listen for changes in the storage
   chrome.storage.onChanged.addListener(function (changes, namespace) {
@@ -43,13 +57,27 @@ function storageChangedListener() {
     if (changes.blurNsfwEnabled) {
       blurNsfwHandler();
     }
+
+    if (changes.downloadButtonEnable) {
+      downloadButtonHandler();
+    }
   });
 }
 
 function defaultStorage() {
   chrome.storage.sync.get(
-    ['autoThanksEnabled', 'screenshotEnabled', 'blurNsfwEnabled'],
-    ({ autoThanksEnabled, screenshotEnabled, blurNsfwEnabled }) => {
+    [
+      'autoThanksEnabled',
+      'screenshotEnabled',
+      'blurNsfwEnabled',
+      'downloadButtonEnable'
+    ],
+    ({
+      autoThanksEnabled,
+      screenshotEnabled,
+      blurNsfwEnabled,
+      downloadButtonEnable
+    }) => {
       if (autoThanksEnabled === null || autoThanksEnabled === undefined) {
         chrome.storage.sync.set({ autoThanksEnabled: true });
       }
@@ -60,6 +88,10 @@ function defaultStorage() {
 
       if (blurNsfwEnabled === null || blurNsfwEnabled === undefined) {
         chrome.storage.sync.set({ blurNsfwEnabled: true });
+      }
+
+      if (downloadButtonEnable === null || downloadButtonEnable === undefined) {
+        chrome.storage.sync.set({ downloadButtonEnable: true });
       }
     }
   );
@@ -72,6 +104,7 @@ function main() {
   autoThanksHandler();
   screenshotHandler();
   blurNsfwHandler();
+  downloadButtonHandler();
   // listener
   storageChangedListener();
 }

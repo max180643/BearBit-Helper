@@ -22,4 +22,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
   // Blur NSFW toggle
   toggleSetting('blurNsfwEnabled', 'toggleBlurNsfw');
+
+  // Download Button toggle
+  toggleSetting('downloadButtonEnable', 'toggleDownloadButton');
 });
