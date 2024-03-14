@@ -4,10 +4,11 @@ Browser extension (Chrome, Edge) for "[Bearbit.co](https://bearbit.co/)" website
 
 ## Overview
 
-<img src="README/ss.png" alt="Extension UI" width="250"/>
+<img src="README/ss+.png" alt="Extension UI" width="250"/>
 
 ## Feature
 
 - Auto Thanks
 - Screenshot Preview
 - Blur NSFW (18+ Content)
+- Download+ Button
