@@ -2,16 +2,45 @@ import { enableBlurNsfw } from './nsfw';
 
 const allowedExtensions = ['jpg', 'jpeg', 'png', 'gif'];
 
-function createImageElement(
-  src: string,
-  maxWidth: string,
-  maxHeight: string
-): HTMLImageElement {
-  const img = document.createElement('img');
-  img.src = src;
-  img.style.maxWidth = maxWidth;
-  img.style.maxHeight = maxHeight;
-  return img;
+function enableScreenshot(blurNsfw: boolean) {
+  const path = window.location.pathname;
+  if (
+    path === '/' ||
+    path === '/index.php' ||
+    path === '/viewno18sb.php' ||
+    path === '/viewbrsb.php'
+  ) {
+    fixCameraIconNoAttribute();
+
+    const table = document.querySelector(
+      '[title="รูปภาพตัวอย่าง"], [title="รูปภาพ"]'
+    )?.parentNode?.parentNode?.parentNode?.parentNode?.parentNode;
+
+    insertScreenshotCellInTable(table as HTMLTableElement);
+
+    if (blurNsfw) {
+      enableBlurNsfw();
+    }
+  }
+}
+
+function disableScreenshot() {
+  const path = window.location.pathname;
+
+  if (
+    path === '/' ||
+    path === '/index.php' ||
+    path === '/viewno18sb.php' ||
+    path === '/viewbrsb.php'
+  ) {
+    const screenshots = document.querySelectorAll(
+      '[bearbit-helper="screenshot"]'
+    );
+
+    if (screenshots) {
+      screenshots.forEach(elem => elem.remove());
+    }
+  }
 }
 
 function insertScreenshotCellInTable(table: HTMLTableElement) {
@@ -70,43 +99,26 @@ function insertScreenshotCellInTable(table: HTMLTableElement) {
   }
 }
 
-function enableScreenshot(blurNsfw: boolean) {
-  const path = window.location.pathname;
-  if (
-    path === '/' ||
-    path === '/index.php' ||
-    path === '/viewno18sb.php' ||
-    path === '/viewbrsb.php'
-  ) {
-    const table = document.querySelector(
-      '[title="รูปภาพตัวอย่าง"], [title="รูปภาพ"]'
-    )?.parentNode?.parentNode?.parentNode?.parentNode?.parentNode;
-
-    insertScreenshotCellInTable(table as HTMLTableElement);
-
-    if (blurNsfw) {
-      enableBlurNsfw();
-    }
-  }
+function createImageElement(
+  src: string,
+  maxWidth: string,
+  maxHeight: string
+): HTMLImageElement {
+  const img = document.createElement('img');
+  img.src = src;
+  img.style.maxWidth = maxWidth;
+  img.style.maxHeight = maxHeight;
+  return img;
 }
 
-function disableScreenshot() {
-  const path = window.location.pathname;
-
-  if (
-    path === '/' ||
-    path === '/index.php' ||
-    path === '/viewno18sb.php' ||
-    path === '/viewbrsb.php'
-  ) {
-    const screenshots = document.querySelectorAll(
-      '[bearbit-helper="screenshot"]'
-    );
-
-    if (screenshots) {
-      screenshots.forEach(elem => elem.remove());
+function fixCameraIconNoAttribute() {
+  const cameraIcons = document.querySelectorAll("[src='pic/cams.gif ']");
+  cameraIcons.forEach(icon => {
+    const title = icon.getAttribute('title');
+    if (!title) {
+      icon.setAttribute('title', 'รูปภาพตัวอย่าง');
     }
-  }
+  });
 }
 
 export { enableScreenshot, disableScreenshot };
