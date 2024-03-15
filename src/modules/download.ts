@@ -110,7 +110,7 @@ async function thanksAndDownload(
     '[title="Download this file"]'
   ) as HTMLLinkElement;
   const downloadUrl = download.href;
-  const downloadFilename = download.innerText;
+  const downloadFilename = fixDownloadFilename(download.innerText);
 
   // send thanks request
   const response = await sendThanksRequest(torrentId);
@@ -140,6 +140,16 @@ async function downloadFile(fileUrl: string, fileName: string): Promise<void> {
   } catch (error) {
     console.error('Error downloading file:', error);
   }
+}
+
+function fixDownloadFilename(filename: string) {
+  let name = filename;
+  name = name.replace('[email protected]', '');
+  name = name.replace(/ /g, '_').replace('@', '_');
+  if (!name.includes('.torrent')) {
+    name = `${name}.torrent`;
+  }
+  return name;
 }
 
 export { enableDownloadButton, disableDownloadButton };
