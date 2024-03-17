@@ -1,4 +1,11 @@
+import {
+  CACHE_DEFAULT_EXPIRE,
+  TorrentDetails,
+  addCacheData,
+  updateCacheData
+} from '../utils/cache';
 import { fetchData, responseTextDecode } from '../utils/http';
+import { downloadFile, fixDownloadFilename } from './download';
 
 async function enableAutoThanks(): Promise<void> {
   const path = window.location.pathname;
@@ -28,6 +35,58 @@ async function enableAutoThanks(): Promise<void> {
         }
       } catch (error) {
         console.error(error);
+      }
+    }
+  }
+
+  if (path === '/downloadnew.php') {
+    const thanks = document.querySelector('[title="กดขอบคุณที่นี่"]');
+    if (thanks) {
+      const thanksElement = thanks.parentNode;
+      if (thanksElement) {
+        const thanksOnclick = (thanksElement as HTMLLinkElement).getAttribute(
+          'onclick'
+        );
+        const pattern = /id=(\d+)/;
+        const match = thanksOnclick?.match(pattern);
+        if (match) {
+          const torrentId = match[1];
+          const downloadUrl = window.location.href;
+          const urlSearchParams = new URLSearchParams(window.location.search);
+          const filename = decodeURIComponent(
+            urlSearchParams.get('filename') ?? 'download'
+          );
+          const downloadFilename = fixDownloadFilename(filename);
+          const referrer = document.referrer;
+
+          // set cache
+          const cacheData: TorrentDetails = {
+            id: torrentId,
+            downloadUrl: downloadUrl,
+            downloadFilename: downloadFilename,
+            isThanks: 0
+          };
+          addCacheData(cacheData, CACHE_DEFAULT_EXPIRE);
+
+          const response = await sendThanksRequest(torrentId);
+          if (response.ok) {
+            // update cache
+            const cacheData: TorrentDetails = {
+              id: torrentId,
+              downloadUrl: downloadUrl,
+              downloadFilename: downloadFilename,
+              isThanks: 1
+            };
+            updateCacheData(cacheData, CACHE_DEFAULT_EXPIRE);
+
+            await downloadFile(downloadUrl, downloadFilename);
+            if (referrer) {
+              window.location.href = referrer;
+            } else {
+              window.location.href = window.location.origin;
+            }
+          }
+        }
       }
     }
   }

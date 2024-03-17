@@ -202,4 +202,9 @@ function fixDownloadFilename(filename: string) {
   return name;
 }
 
-export { enableDownloadButton, disableDownloadButton };
+export {
+  enableDownloadButton,
+  disableDownloadButton,
+  downloadFile,
+  fixDownloadFilename
+};
