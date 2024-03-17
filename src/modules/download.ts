@@ -1,3 +1,10 @@
+import {
+  CACHE_DEFAULT_EXPIRE,
+  TorrentDetails,
+  addCacheData,
+  getCacheData,
+  updateCacheData
+} from '../utils/cache';
 import { fetchData, parseDocument, responseTextDecode } from '../utils/http';
 import { findCellIndexByValue } from '../utils/table';
 import { sendThanksRequest } from './thanks';
@@ -100,23 +107,66 @@ async function thanksAndDownload(
   torrentDetailUrl: string,
   torrentId: string
 ): Promise<void> {
-  // get torrent detail
-  const bodyResponse = await fetchData(torrentDetailUrl);
-  const htmlContent = await responseTextDecode(bodyResponse, 'TIS-620');
-  const detailDocument = parseDocument(htmlContent);
+  const cache: TorrentDetails = await getCacheData(torrentId);
+  if (cache) {
+    // check thank
+    if (cache?.isThanks === 0) {
+      // send thanks request
+      const response = await sendThanksRequest(torrentId);
+      if (response.ok) {
+        // update cache
+        const cacheData: TorrentDetails = {
+          id: torrentId,
+          downloadUrl: cache?.downloadUrl,
+          downloadFilename: cache?.downloadFilename,
+          isThanks: 1
+        };
+        updateCacheData(cacheData, CACHE_DEFAULT_EXPIRE);
 
-  // get download url
-  const download = detailDocument.querySelector(
-    '[title="Download this file"]'
-  ) as HTMLLinkElement;
-  const downloadUrl = download.href;
-  const downloadFilename = fixDownloadFilename(download.innerText);
+        // download torrent
+        await downloadFile(cache?.downloadUrl, cache?.downloadFilename);
+      }
+    } else {
+      // download torrent
+      await downloadFile(cache?.downloadUrl, cache?.downloadFilename);
+    }
+  } else {
+    // get torrent detail
+    const bodyResponse = await fetchData(torrentDetailUrl);
+    const htmlContent = await responseTextDecode(bodyResponse, 'TIS-620');
+    const detailDocument = parseDocument(htmlContent);
 
-  // send thanks request
-  const response = await sendThanksRequest(torrentId);
-  if (response.ok) {
-    // download torrent
-    await downloadFile(downloadUrl, downloadFilename);
+    // get download url
+    const download = detailDocument.querySelector(
+      '[title="Download this file"]'
+    ) as HTMLLinkElement;
+    const downloadUrl = download.href;
+    const downloadFilename = fixDownloadFilename(download.innerText);
+
+    // set cache
+    const cacheData: TorrentDetails = {
+      id: torrentId,
+      downloadUrl: downloadUrl,
+      downloadFilename: downloadFilename,
+      isThanks: 0
+    };
+    addCacheData(cacheData, CACHE_DEFAULT_EXPIRE);
+
+    // send thanks request
+    const response = await sendThanksRequest(torrentId);
+    if (response.ok) {
+      // update cache
+      const cacheData: TorrentDetails = {
+        id: torrentId,
+        downloadUrl: downloadUrl,
+        downloadFilename: downloadFilename,
+        isThanks: 1
+      };
+      updateCacheData(cacheData, CACHE_DEFAULT_EXPIRE);
+
+      // download torrent
+      await downloadFile(downloadUrl, downloadFilename);
+    }
   }
 }
 

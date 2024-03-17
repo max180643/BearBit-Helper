@@ -5,6 +5,7 @@ import {
   disableDownloadButton,
   enableDownloadButton
 } from './modules/download';
+import { removeExpiredOrWrongVersionCacheData } from './utils/cache';
 
 function autoThanksHandler() {
   chrome.storage.sync.get('autoThanksEnabled', ({ autoThanksEnabled }) => {
@@ -98,13 +99,18 @@ function defaultStorage() {
 }
 
 function main() {
-  // set default storage when storage undefined
+  // set default storage
   defaultStorage();
+
+  // cache
+  removeExpiredOrWrongVersionCacheData();
+
   // method handler
   autoThanksHandler();
   screenshotHandler();
   blurNsfwHandler();
   downloadButtonHandler();
+
   // listener
   storageChangedListener();
 }

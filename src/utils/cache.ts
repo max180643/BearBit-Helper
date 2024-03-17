@@ -4,13 +4,22 @@ import {
   deleteData,
   getAllData,
   getDataByKey,
-  openDatabase
+  openDatabase,
+  updateData
 } from './db';
 
 const DB_NAME = 'BearBit-Helper-DB';
 const DB_VERSION = 1;
 const DB_OBJECT_NAME = 'torrent';
 const CACHE_VERSION = 'v1';
+const CACHE_DEFAULT_EXPIRE = 604800; // 7 days
+
+interface TorrentDetails {
+  id: string;
+  downloadUrl: string;
+  downloadFilename: string;
+  isThanks: number;
+}
 
 async function getCacheData(id: string): Promise<any> {
   const db = await openDatabase(
@@ -60,17 +69,28 @@ async function addCacheData(
   );
 
   await addData(db, DB_OBJECT_NAME, dataWithExpirationAndVersion);
+}
 
-  // try {
-  //   await addData(db, DB_OBJECT_NAME, dataWithExpiration);
-  // } catch (error: any) {
-  //   const message = error.toString();
-  //   if (message.includes('Key already exists in the object')) {
-  //     await updateData(db, DB_OBJECT_NAME, dataWithExpiration);
-  //   } else {
-  //     throw error;
-  //   }
-  // }
+async function updateCacheData(
+  data: any,
+  expirationSeconds: number
+): Promise<void> {
+  const expirationDate = new Date(
+    Date.now() + expirationSeconds * 1000
+  ).toISOString();
+  const version = CACHE_VERSION;
+  const dataWithExpirationAndVersion = { ...data, expirationDate, version };
+
+  const db = await openDatabase(
+    DB_NAME,
+    DB_VERSION,
+    (event: IDBVersionChangeEvent) => {
+      const db = (<IDBOpenDBRequest>event.target).result as IDBDatabase;
+      createObjectStore(db, DB_OBJECT_NAME, 'id');
+    }
+  );
+
+  await updateData(db, DB_OBJECT_NAME, dataWithExpirationAndVersion);
 }
 
 async function removeExpiredOrWrongVersionCacheData(): Promise<void> {
@@ -99,4 +119,11 @@ async function removeExpiredOrWrongVersionCacheData(): Promise<void> {
   });
 }
 
-export { getCacheData, addCacheData, removeExpiredOrWrongVersionCacheData };
+export {
+  getCacheData,
+  addCacheData,
+  updateCacheData,
+  removeExpiredOrWrongVersionCacheData,
+  CACHE_DEFAULT_EXPIRE,
+  TorrentDetails
+};
