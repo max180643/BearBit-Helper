@@ -7,49 +7,24 @@ import {
   updateCacheData
 } from '../utils/cache';
 import { fetchData, parseDocument, responseTextDecode } from '../utils/http';
-import { findCellIndexByValue } from '../utils/table';
+import { extractDetailsUrlParameter } from '../utils/url';
 import { sendThanksRequest } from './thanks';
 
 async function enableDownloadButton(): Promise<void> {
   const path = window.location.pathname;
   if (path === '/viewno18sb.php' || path === '/viewbrsb.php') {
-    const prevPage = document.querySelector('[title="หน้าที่แล้ว"]');
-    const table = (prevPage?.parentNode?.parentNode as HTMLElement)
-      .nextElementSibling as HTMLTableElement;
-
-    if (table) {
-      let cellValue = -1;
-      for (let i = 0, row: HTMLTableRowElement; (row = table.rows[i]); i++) {
-        if (i === 0) {
-          // header row
-          cellValue = findCellIndexByValue(row, 'ชื่อไฟล์');
-        } else if (i !== -1) {
-          // get cell - filename column
-          const cells = row.getElementsByTagName('td');
-          const filename = cells[cellValue];
-          // get torrent detail url
-          const torrentDetailUrl = filename.querySelector('a')?.href ?? '';
-          const isValidTorrentDetailUrl =
-            torrentDetailUrl.includes('/details.php');
-          if (isValidTorrentDetailUrl) {
-            // get torrent id / hash info
-            const regex = torrentDetailUrl.match(/\?(.*)$/);
-            if (regex) {
-              const queryString = regex[0];
-              const urlSearchParams = new URLSearchParams(queryString);
-              const torrentId = urlSearchParams.get('id') ?? '';
-              // const torrentHashInfo = urlSearchParams.get('hashinfo') ?? '';
-              if (torrentDetailUrl && torrentId) {
-                // add download button
-                filename.appendChild(
-                  generateDownloadButton(torrentDetailUrl, torrentId)
-                );
-              }
-            }
-          }
+    const details = document.querySelectorAll("td > a[href^='details.php']");
+    details.forEach(detail => {
+      const torrentDetailUrl = (detail as HTMLLinkElement).href;
+      if (torrentDetailUrl.includes('/details.php')) {
+        const torrentDetails = extractDetailsUrlParameter(torrentDetailUrl);
+        if (torrentDetailUrl && torrentDetails.torrentId) {
+          (detail.parentNode as HTMLElement).appendChild(
+            generateDownloadButton(torrentDetailUrl, torrentDetails.torrentId)
+          );
         }
       }
-    }
+    });
   }
 }
 
