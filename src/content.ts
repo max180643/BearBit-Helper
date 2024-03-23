@@ -5,7 +5,11 @@ import {
   disableDownloadButton,
   enableDownloadButton
 } from './modules/download';
-import { removeExpiredOrWrongVersionCacheData } from './utils/cache';
+import {
+  DB_POSTER_OBJECT_NAME,
+  DB_TORRENT_OBJECT_NAME,
+  removeExpiredOrWrongVersionCacheData
+} from './utils/cache';
 
 function autoThanksHandler() {
   chrome.storage.sync.get('autoThanksEnabled', ({ autoThanksEnabled }) => {
@@ -103,7 +107,10 @@ function main() {
   defaultStorage();
 
   // cache
-  removeExpiredOrWrongVersionCacheData();
+  removeExpiredOrWrongVersionCacheData([
+    DB_TORRENT_OBJECT_NAME,
+    DB_POSTER_OBJECT_NAME
+  ]);
 
   // method handler
   autoThanksHandler();
@@ -116,3 +123,5 @@ function main() {
 }
 
 main();
+
+export { blurNsfwHandler };

@@ -1,5 +1,6 @@
 import {
   CACHE_DEFAULT_EXPIRE,
+  DB_TORRENT_OBJECT_NAME,
   TorrentDetails,
   addCacheData,
   updateCacheData
@@ -66,7 +67,7 @@ async function enableAutoThanks(): Promise<void> {
             downloadFilename: downloadFilename,
             isThanks: 0
           };
-          addCacheData(cacheData, CACHE_DEFAULT_EXPIRE);
+          addCacheData(cacheData, CACHE_DEFAULT_EXPIRE, DB_TORRENT_OBJECT_NAME);
 
           const response = await sendThanksRequest(torrentId);
           if (response.ok) {
@@ -77,7 +78,11 @@ async function enableAutoThanks(): Promise<void> {
               downloadFilename: downloadFilename,
               isThanks: 1
             };
-            updateCacheData(cacheData, CACHE_DEFAULT_EXPIRE);
+            updateCacheData(
+              cacheData,
+              CACHE_DEFAULT_EXPIRE,
+              DB_TORRENT_OBJECT_NAME
+            );
 
             await downloadFile(downloadUrl, downloadFilename);
             if (referrer) {

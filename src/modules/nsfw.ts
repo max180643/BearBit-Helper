@@ -22,7 +22,7 @@ function enableBlurNsfw() {
     path === '/viewbrsb.php'
   ) {
     const screenshots = document.querySelectorAll(
-      '[bearbit-screenshot="preview"]'
+      '[bearbit-screenshot="preview"]:not([bearbit-nsfw="checked"])'
     );
 
     if (screenshots) {
@@ -45,6 +45,7 @@ function enableBlurNsfw() {
             }
           }
         }
+        td.setAttribute('bearbit-nsfw', 'checked');
       });
     }
   }
@@ -69,6 +70,8 @@ function disableBlurNsfw() {
         if (styles.getPropertyValue('filter')) {
           (img as HTMLImageElement).style.removeProperty('filter');
         }
+        const td = img.parentNode;
+        (td as HTMLElement).removeAttribute('bearbit-nsfw');
       });
     }
   }

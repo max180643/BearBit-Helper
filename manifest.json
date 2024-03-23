@@ -2,7 +2,7 @@
   "manifest_version": 3,
   "name": "BearBit Helper",
   "description": "Extension for 'bearbit.co' - Auto Thank, Screenshot Preview, Download+ Button (กดขอบคุณอัตโนมัติ, แสดงภาพตัวอย่าง, ปุ่มดาวน์โหลด+)",
-  "version": "1.1.0",
+  "version": "1.2.0",
   "author": "CHNWT",
   "permissions": ["storage"],
   "icons": {

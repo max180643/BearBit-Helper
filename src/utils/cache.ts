@@ -10,7 +10,8 @@ import {
 
 const DB_NAME = 'BearBit-Helper-DB';
 const DB_VERSION = 1;
-const DB_OBJECT_NAME = 'torrent';
+const DB_TORRENT_OBJECT_NAME = 'torrent';
+const DB_POSTER_OBJECT_NAME = 'poster';
 const CACHE_VERSION = 'v1';
 const CACHE_DEFAULT_EXPIRE = 604800; // 7 days
 
@@ -21,17 +22,22 @@ interface TorrentDetails {
   isThanks: number;
 }
 
-async function getCacheData(id: string): Promise<any> {
+interface PosterDetails {
+  id: string;
+  image: string;
+}
+
+async function getCacheData(id: string, objectName: string): Promise<any> {
   const db = await openDatabase(
     DB_NAME,
     DB_VERSION,
     (event: IDBVersionChangeEvent) => {
       const db = (<IDBOpenDBRequest>event.target).result as IDBDatabase;
-      createObjectStore(db, DB_OBJECT_NAME, 'id');
+      createObjectStore(db, objectName, 'id');
     }
   );
 
-  const data = await getDataByKey(db, DB_OBJECT_NAME, id);
+  const data = await getDataByKey(db, objectName, id);
 
   // check expiration
   if (data) {
@@ -39,7 +45,7 @@ async function getCacheData(id: string): Promise<any> {
 
     if (isExpire) {
       // delete data
-      await deleteData(db, DB_OBJECT_NAME, id);
+      await deleteData(db, objectName, id);
       return null;
     }
 
@@ -51,7 +57,8 @@ async function getCacheData(id: string): Promise<any> {
 
 async function addCacheData(
   data: any,
-  expirationSeconds: number
+  expirationSeconds: number,
+  objectName: string
 ): Promise<void> {
   const expirationDate = new Date(
     Date.now() + expirationSeconds * 1000
@@ -64,16 +71,17 @@ async function addCacheData(
     DB_VERSION,
     (event: IDBVersionChangeEvent) => {
       const db = (<IDBOpenDBRequest>event.target).result as IDBDatabase;
-      createObjectStore(db, DB_OBJECT_NAME, 'id');
+      createObjectStore(db, objectName, 'id');
     }
   );
 
-  await addData(db, DB_OBJECT_NAME, dataWithExpirationAndVersion);
+  await addData(db, objectName, dataWithExpirationAndVersion);
 }
 
 async function updateCacheData(
   data: any,
-  expirationSeconds: number
+  expirationSeconds: number,
+  objectName: string
 ): Promise<void> {
   const expirationDate = new Date(
     Date.now() + expirationSeconds * 1000
@@ -86,14 +94,16 @@ async function updateCacheData(
     DB_VERSION,
     (event: IDBVersionChangeEvent) => {
       const db = (<IDBOpenDBRequest>event.target).result as IDBDatabase;
-      createObjectStore(db, DB_OBJECT_NAME, 'id');
+      createObjectStore(db, objectName, 'id');
     }
   );
 
-  await updateData(db, DB_OBJECT_NAME, dataWithExpirationAndVersion);
+  await updateData(db, objectName, dataWithExpirationAndVersion);
 }
 
-async function removeExpiredOrWrongVersionCacheData(): Promise<void> {
+async function removeExpiredOrWrongVersionCacheData(
+  objectName: string[]
+): Promise<void> {
   const currentDate = new Date();
 
   const db = await openDatabase(
@@ -101,29 +111,35 @@ async function removeExpiredOrWrongVersionCacheData(): Promise<void> {
     DB_VERSION,
     (event: IDBVersionChangeEvent) => {
       const db = (<IDBOpenDBRequest>event.target).result as IDBDatabase;
-      createObjectStore(db, DB_OBJECT_NAME, 'id');
+      objectName.forEach(name => {
+        createObjectStore(db, name, 'id');
+      });
     }
   );
 
-  const items = await getAllData(db, DB_OBJECT_NAME);
+  objectName.forEach(async name => {
+    const items = await getAllData(db, name);
 
-  items.forEach(async item => {
-    if (
-      // expired
-      new Date(item?.expirationDate) < currentDate ||
-      // wrong version
-      item?.version !== CACHE_VERSION
-    ) {
-      await deleteData(db, DB_OBJECT_NAME, item?.id);
-    }
+    items.forEach(async item => {
+      if (
+        // expired
+        new Date(item?.expirationDate) < currentDate ||
+        // wrong version
+        item?.version !== CACHE_VERSION
+      ) {
+        await deleteData(db, name, item?.id);
+      }
+    });
   });
 }
 
+export type { TorrentDetails, PosterDetails };
 export {
   getCacheData,
   addCacheData,
   updateCacheData,
   removeExpiredOrWrongVersionCacheData,
   CACHE_DEFAULT_EXPIRE,
-  TorrentDetails
+  DB_TORRENT_OBJECT_NAME,
+  DB_POSTER_OBJECT_NAME
 };

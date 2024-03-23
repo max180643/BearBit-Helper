@@ -30,4 +30,38 @@ function parseDocument(content: string): Document {
   return document;
 }
 
-export { fetchData, responseText, responseTextDecode, parseDocument };
+async function fetchImage(imageUrl: string): Promise<Blob> {
+  const response = await fetch(
+    'https://corsproxy.io/?' + encodeURIComponent(imageUrl)
+  );
+  if (!response.ok) {
+    throw new Error(`Failed to fetch image: ${response.statusText}`);
+  }
+  return await response.blob();
+}
+
+async function convertBlobToBase64(blob: Blob): Promise<string> {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+
+    reader.onload = () => {
+      const base64data = reader.result as string;
+      resolve(base64data);
+    };
+
+    reader.onerror = () => {
+      reject(reader.error);
+    };
+
+    reader.readAsDataURL(blob);
+  });
+}
+
+export {
+  fetchData,
+  responseText,
+  responseTextDecode,
+  parseDocument,
+  fetchImage,
+  convertBlobToBase64
+};

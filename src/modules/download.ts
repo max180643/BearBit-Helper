@@ -1,5 +1,6 @@
 import {
   CACHE_DEFAULT_EXPIRE,
+  DB_TORRENT_OBJECT_NAME,
   TorrentDetails,
   addCacheData,
   getCacheData,
@@ -107,7 +108,10 @@ async function thanksAndDownload(
   torrentDetailUrl: string,
   torrentId: string
 ): Promise<void> {
-  const cache: TorrentDetails = await getCacheData(torrentId);
+  const cache: TorrentDetails = await getCacheData(
+    torrentId,
+    DB_TORRENT_OBJECT_NAME
+  );
   if (cache) {
     // check thank
     if (cache?.isThanks === 0) {
@@ -121,7 +125,11 @@ async function thanksAndDownload(
           downloadFilename: cache?.downloadFilename,
           isThanks: 1
         };
-        updateCacheData(cacheData, CACHE_DEFAULT_EXPIRE);
+        updateCacheData(
+          cacheData,
+          CACHE_DEFAULT_EXPIRE,
+          DB_TORRENT_OBJECT_NAME
+        );
 
         // download torrent
         await downloadFile(cache?.downloadUrl, cache?.downloadFilename);
@@ -150,7 +158,7 @@ async function thanksAndDownload(
       downloadFilename: downloadFilename,
       isThanks: 0
     };
-    addCacheData(cacheData, CACHE_DEFAULT_EXPIRE);
+    addCacheData(cacheData, CACHE_DEFAULT_EXPIRE, DB_TORRENT_OBJECT_NAME);
 
     // send thanks request
     const response = await sendThanksRequest(torrentId);
@@ -162,7 +170,7 @@ async function thanksAndDownload(
         downloadFilename: downloadFilename,
         isThanks: 1
       };
-      updateCacheData(cacheData, CACHE_DEFAULT_EXPIRE);
+      updateCacheData(cacheData, CACHE_DEFAULT_EXPIRE, DB_TORRENT_OBJECT_NAME);
 
       // download torrent
       await downloadFile(downloadUrl, downloadFilename);
