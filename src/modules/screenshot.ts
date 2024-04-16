@@ -61,7 +61,7 @@ async function insertScreenshotCellInTable(table: HTMLTableElement) {
       const siblingCell = newCell.nextSibling as HTMLElement;
 
       newCell.setAttribute('bearbit-helper', 'screenshot');
-      newCell.setAttribute('width', '120');
+      newCell.setAttribute('width', '350px');
       newCell.setAttribute('align', 'center');
       newCell.setAttribute(
         'bgcolor',
@@ -72,112 +72,159 @@ async function insertScreenshotCellInTable(table: HTMLTableElement) {
         newCell.classList.add('colhead');
         newCell.textContent = 'รูปภาพตัวอย่าง';
       } else {
-        const cameraIcon = row.querySelector(
-          '[title="รูปภาพตัวอย่าง"], [title="รูปภาพ"]'
-        ) as HTMLElement;
+        // add loading image
+        const imageLoading = 'loading';
+        const imageWidth = '35px';
+        const imageHeight = '35px';
 
-        if (cameraIcon) {
-          const imageWidth = '120px';
-          const imageHeight = '150px';
+        const cache: PosterDetails = await getCacheData(
+          imageLoading,
+          DB_POSTER_OBJECT_NAME
+        );
 
-          const cell = cameraIcon?.parentNode?.parentNode as HTMLElement;
-          const torrentDetailUrl = cell.querySelector('a')?.href ?? '';
-          const details = extractDetailsUrlParameter(torrentDetailUrl);
-
-          const cache: PosterDetails = await getCacheData(
-            details.torrentId,
-            DB_POSTER_OBJECT_NAME
+        if (cache) {
+          const image = createImageElement(
+            cache?.image,
+            imageWidth,
+            imageWidth
           );
+          newCell.appendChild(image);
+        } else {
+          const imageUrl = 'https://i.imgur.com/ik6XnmF.gif';
+          const image = createImageElement(imageUrl, imageWidth, imageHeight);
+          newCell.appendChild(image);
 
-          if (cache) {
-            const image = createImageElement(
-              cache?.image,
-              imageWidth,
-              imageWidth
+          // set cache
+          try {
+            const imageBlob = await fetchImage(imageUrl);
+            const imageBase64 = await convertBlobToBase64(imageBlob);
+
+            const cacheData: PosterDetails = {
+              id: imageLoading,
+              image: imageBase64
+            };
+            addCacheData(
+              cacheData,
+              CACHE_DEFAULT_EXPIRE,
+              DB_POSTER_OBJECT_NAME
             );
-            newCell.appendChild(image);
-            newCell.setAttribute('bearbit-screenshot', 'preview');
-            blurNsfwHandler();
-          } else {
-            const imageUrl =
-              (cameraIcon.parentNode as HTMLAnchorElement).href ?? '';
-            const extension = imageUrl.split('.').pop() ?? '';
+          } catch (error) {
+            console.error(error);
+          }
+        }
 
-            if (allowedExtensions.indexOf(extension) !== -1) {
-              const image = createImageElement(
-                imageUrl,
-                imageWidth,
-                imageHeight
-              );
-              newCell.appendChild(image);
-              newCell.setAttribute('bearbit-screenshot', 'preview');
-              blurNsfwHandler();
+        newCell.setAttribute('bearbit-screenshot', `loading#${i}`);
+      }
+    }
 
-              // set cache
-              try {
-                const imageBlob = await fetchImage(imageUrl);
-                const imageBase64 = await convertBlobToBase64(imageBlob);
+    addScreenshotImage();
+  }
+}
 
-                const cacheData: PosterDetails = {
-                  id: details.torrentId,
-                  image: imageBase64
-                };
-                addCacheData(
-                  cacheData,
-                  CACHE_DEFAULT_EXPIRE,
-                  DB_POSTER_OBJECT_NAME
-                );
-              } catch (error) {
-                console.error(error);
-              }
-            } else {
-              const imageNoPreview = 'nopreview';
-              const imageWidth = '64px';
-              const imageHeight = '64px';
+function addScreenshotImage() {
+  const loadingImage = document.querySelectorAll(
+    '[bearbit-screenshot^="loading#"]'
+  );
 
-              const cache: PosterDetails = await getCacheData(
-                imageNoPreview,
-                DB_POSTER_OBJECT_NAME
-              );
+  if (loadingImage) {
+    loadingImage.forEach(elem => {
+      addScreenshotImageToCell(elem as HTMLTableCellElement);
+    });
+  }
+}
 
-              if (cache) {
-                const image = createImageElement(
-                  cache?.image,
-                  imageWidth,
-                  imageWidth
-                );
-                newCell.appendChild(image);
-                newCell.setAttribute('bearbit-screenshot', 'no-preview');
-              } else {
-                const imageUrl = 'https://i.imgur.com/eScU17W.png';
-                const image = createImageElement(
-                  imageUrl,
-                  imageWidth,
-                  imageHeight
-                );
-                image.style.marginLeft = '10px';
-                newCell.appendChild(image);
-                newCell.setAttribute('bearbit-screenshot', 'no-preview');
+async function addScreenshotImageToCell(cell: HTMLTableCellElement) {
+  const tableRow = cell?.parentNode as HTMLElement;
+  const cameraIcon = tableRow.querySelector(
+    '[title="รูปภาพตัวอย่าง"], [title="รูปภาพ"]'
+  ) as HTMLElement;
 
-                // set cache
-                try {
-                  const imageBlob = await fetchImage(imageUrl);
-                  const imageBase64 = await convertBlobToBase64(imageBlob);
+  if (cameraIcon) {
+    const imageWidth = '120px';
+    const imageHeight = '150px';
 
-                  const cacheData: PosterDetails = {
-                    id: imageNoPreview,
-                    image: imageBase64
-                  };
-                  addCacheData(
-                    cacheData,
-                    CACHE_DEFAULT_EXPIRE,
-                    DB_POSTER_OBJECT_NAME
-                  );
-                } catch (error) {
-                  console.error(error);
-                }
-              }
-            }
+    const fileDetailCell = cameraIcon?.parentNode?.parentNode as HTMLElement;
+    const torrentDetailUrl = fileDetailCell.querySelector('a')?.href ?? '';
+    const details = extractDetailsUrlParameter(torrentDetailUrl);
+
+    const cache: PosterDetails = await getCacheData(
+      details.torrentId,
+      DB_POSTER_OBJECT_NAME
+    );
+
+    if (cache) {
+      const image = createImageElement(cache?.image, imageWidth, imageHeight);
+      cell.innerHTML = '';
+      cell.appendChild(image);
+      cell.setAttribute('bearbit-screenshot', 'preview');
+      blurNsfwHandler();
+    } else {
+      const imageUrl = (cameraIcon.parentNode as HTMLAnchorElement).href ?? '';
+      const extension = imageUrl.split('.').pop() ?? '';
+
+      if (allowedExtensions.indexOf(extension) !== -1) {
+        const image = createImageElement(imageUrl, imageWidth, imageHeight);
+        cell.innerHTML = '';
+        cell.appendChild(image);
+        cell.setAttribute('bearbit-screenshot', 'preview');
+        blurNsfwHandler();
+
+        // set cache
+        try {
+          const imageBlob = await fetchImage(imageUrl);
+          const imageBase64 = await convertBlobToBase64(imageBlob);
+
+          const cacheData: PosterDetails = {
+            id: details.torrentId,
+            image: imageBase64
+          };
+          addCacheData(cacheData, CACHE_DEFAULT_EXPIRE, DB_POSTER_OBJECT_NAME);
+        } catch (error) {
+          console.error(error);
+        }
+      } else {
+        const imageNoPreview = 'nopreview';
+        const imageWidth = '64px';
+        const imageHeight = '64px';
+
+        const cache: PosterDetails = await getCacheData(
+          imageNoPreview,
+          DB_POSTER_OBJECT_NAME
+        );
+
+        if (cache) {
+          const image = createImageElement(
+            cache?.image,
+            imageWidth,
+            imageHeight
+          );
+          cell.innerHTML = '';
+          cell.appendChild(image);
+          cell.setAttribute('bearbit-screenshot', 'no-preview');
+        } else {
+          const imageUrl = 'https://i.imgur.com/eScU17W.png';
+          const image = createImageElement(imageUrl, imageWidth, imageHeight);
+          image.style.marginLeft = '10px';
+          cell.innerHTML = '';
+          cell.appendChild(image);
+          cell.setAttribute('bearbit-screenshot', 'no-preview');
+
+          // set cache
+          try {
+            const imageBlob = await fetchImage(imageUrl);
+            const imageBase64 = await convertBlobToBase64(imageBlob);
+
+            const cacheData: PosterDetails = {
+              id: imageNoPreview,
+              image: imageBase64
+            };
+            addCacheData(
+              cacheData,
+              CACHE_DEFAULT_EXPIRE,
+              DB_POSTER_OBJECT_NAME
+            );
+          } catch (error) {
+            console.error(error);
           }
         }
       }
