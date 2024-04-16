@@ -20,6 +20,7 @@ function enableScreenshot(blurNsfw: boolean) {
     path === '/viewno18sb.php' ||
     path === '/viewbrsb.php'
   ) {
+    prepareScreenshotModal();
     fixCameraIconNoAttribute();
 
     const table = document.querySelector(
@@ -154,6 +155,10 @@ async function addScreenshotImageToCell(cell: HTMLTableCellElement) {
 
     if (cache) {
       const image = createImageElement(cache?.image, imageWidth, imageHeight);
+      image.style.cursor = 'pointer';
+      image.onclick = () => {
+        openScreenshotModal(cache?.image);
+      };
       cell.innerHTML = '';
       cell.appendChild(image);
       cell.setAttribute('bearbit-screenshot', 'preview');
@@ -164,6 +169,10 @@ async function addScreenshotImageToCell(cell: HTMLTableCellElement) {
 
       if (allowedExtensions.indexOf(extension) !== -1) {
         const image = createImageElement(imageUrl, imageWidth, imageHeight);
+        image.style.cursor = 'pointer';
+        image.onclick = () => {
+          openScreenshotModal(imageUrl);
+        };
         cell.innerHTML = '';
         cell.appendChild(image);
         cell.setAttribute('bearbit-screenshot', 'preview');
@@ -252,6 +261,85 @@ function fixCameraIconNoAttribute() {
       icon.setAttribute('title', 'รูปภาพตัวอย่าง');
     }
   });
+}
+
+function prepareScreenshotModal() {
+  const modalDiv = document.createElement('div');
+  modalDiv.id = 'screenshot-modal';
+  modalDiv.style.display = 'none';
+  modalDiv.style.position = 'fixed';
+  modalDiv.style.zIndex = '9999';
+  modalDiv.style.left = '0';
+  modalDiv.style.top = '0';
+  modalDiv.style.width = '100%';
+  modalDiv.style.height = '100%';
+  modalDiv.style.overflow = 'auto';
+  modalDiv.style.backgroundColor = 'rgba(0,0,0,0.8)';
+  modalDiv.onclick = closeScreenshotModal;
+
+  const modalContent = document.createElement('div');
+  modalContent.style.margin = 'auto';
+  modalContent.style.display = 'block';
+  modalContent.style.height = '100%';
+  modalContent.style.width = '80%';
+  modalContent.style.maxWidth = '700px';
+  modalContent.style.maxHeight = '100%';
+
+  const closeContainer = document.createElement('div');
+  closeContainer.style.display = 'flex';
+  closeContainer.style.justifyContent = 'end';
+  closeContainer.style.padding = '12px 0px';
+
+  const closeButton = document.createElement('span');
+  closeButton.style.color = '#fff';
+  closeButton.style.fontSize = '28px';
+  closeButton.style.fontWeight = 'bold';
+  closeButton.style.cursor = 'pointer';
+  closeButton.innerHTML = '&times;';
+  closeButton.onclick = closeScreenshotModal;
+
+  const imgContainer = document.createElement('div');
+  imgContainer.style.display = 'flex';
+  imgContainer.style.justifyContent = 'center';
+  imgContainer.style.alignItems = 'center';
+  imgContainer.style.height = '90%';
+
+  const imgContent = document.createElement('div');
+  imgContent.style.display = 'flex';
+  imgContent.style.justifyContent = 'center';
+  imgContent.style.maxHeight = '90%';
+
+  const img = document.createElement('img');
+  img.id = 'screenshot-modal-image';
+  img.style.maxWidth = '70%';
+  img.style.height = 'auto';
+
+  imgContent.appendChild(img);
+  imgContainer.appendChild(imgContent);
+  closeContainer.appendChild(closeButton);
+  modalContent.appendChild(closeContainer);
+  modalContent.appendChild(imgContainer);
+  modalDiv.appendChild(modalContent);
+
+  document.body.appendChild(modalDiv);
+}
+
+function openScreenshotModal(imgSrc: string) {
+  const image = document.getElementById('screenshot-modal-image');
+  const modal = document.getElementById('screenshot-modal');
+  if (modal && image) {
+    (image as HTMLImageElement).src = imgSrc;
+    modal.style.display = 'block';
+  }
+}
+
+function closeScreenshotModal() {
+  const image = document.getElementById('screenshot-modal-image');
+  const modal = document.getElementById('screenshot-modal');
+  if (modal && image) {
+    (image as HTMLImageElement).src = '';
+    modal.style.display = 'none';
+  }
 }
 
 export { enableScreenshot, disableScreenshot };
