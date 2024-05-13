@@ -18,6 +18,7 @@ function enableScreenshot(blurNsfw: boolean) {
     path === '/' ||
     path === '/index.php' ||
     path === '/viewno18sb.php' ||
+    path === '/viewno18sbx.php' ||
     path === '/viewbrsb.php'
   ) {
     prepareScreenshotModal();
@@ -42,6 +43,7 @@ function disableScreenshot() {
     path === '/' ||
     path === '/index.php' ||
     path === '/viewno18sb.php' ||
+    path === '/viewno18sbx.php' ||
     path === '/viewbrsb.php'
   ) {
     const screenshots = document.querySelectorAll(

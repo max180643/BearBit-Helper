@@ -19,6 +19,7 @@ function enableBlurNsfw() {
     path === '/' ||
     path === '/index.php' ||
     path === '/viewno18sb.php' ||
+    path === '/viewno18sbx.php' ||
     path === '/viewbrsb.php'
   ) {
     const screenshots = document.querySelectorAll(
@@ -58,6 +59,7 @@ function disableBlurNsfw() {
     path === '/' ||
     path === '/index.php' ||
     path === '/viewno18sb.php' ||
+    path === '/viewno18sbx.php' ||
     path === '/viewbrsb.php'
   ) {
     const screenshots = document.querySelectorAll(

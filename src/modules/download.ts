@@ -12,7 +12,11 @@ import { sendThanksRequest } from './thanks';
 
 async function enableDownloadButton(): Promise<void> {
   const path = window.location.pathname;
-  if (path === '/viewno18sb.php' || path === '/viewbrsb.php') {
+  if (
+    path === '/viewno18sb.php' ||
+    path === '/viewno18sbx.php' ||
+    path === '/viewbrsb.php'
+  ) {
     const details = document.querySelectorAll("td > a[href^='details.php']");
     details.forEach(detail => {
       const torrentDetailUrl = (detail as HTMLLinkElement).href;
@@ -31,7 +35,11 @@ async function enableDownloadButton(): Promise<void> {
 function disableDownloadButton() {
   const path = window.location.pathname;
 
-  if (path === '/viewno18sb.php' || path === '/viewbrsb.php') {
+  if (
+    path === '/viewno18sb.php' ||
+    path === '/viewno18sbx.php' ||
+    path === '/viewbrsb.php'
+  ) {
     const downloadButtons = document.querySelectorAll(
       '[bearbit-helper="download-btn"]'
     );
