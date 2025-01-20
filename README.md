@@ -1,6 +1,6 @@
 # BearBit - Helper
 
-Browser extension (Chrome, Edge) for "[Bearbit.co](https://bearbit.co/)" website that make your life easier
+Browser extension (Chrome, Edge) for "[Bearbit.org](https://bearbit.org/)" website that make your life easier
 
 ## Overview
 

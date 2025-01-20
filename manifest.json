@@ -1,8 +1,8 @@
 {
   "manifest_version": 3,
   "name": "BearBit Helper",
-  "description": "Extension for 'bearbit.co' - Auto Thank, Screenshot Preview, Download+ Button (กดขอบคุณอัตโนมัติ, แสดงภาพตัวอย่าง, ปุ่มดาวน์โหลด+)",
-  "version": "1.3.1",
+  "description": "Extension for 'bearbit.org' - Auto Thank, Screenshot Preview, Download+ Button (กดขอบคุณอัตโนมัติ, แสดงภาพตัวอย่าง, ปุ่มดาวน์โหลด+)",
+  "version": "1.3.2",
   "author": "CHNWT",
   "permissions": ["storage"],
   "icons": {
@@ -12,7 +12,7 @@
   },
   "content_scripts": [
     {
-      "matches": ["https://bearbit.co/*"],
+      "matches": ["https://bearbit.org/*"],
       "js": ["content.js"]
     }
   ],
