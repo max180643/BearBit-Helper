@@ -189,14 +189,16 @@ async function addScreenshotImageToCell(cell: HTMLTableCellElement) {
       image.onclick = () => {
         openScreenshotModal(cache?.image);
       };
-      image.setAttribute(
-        'onmouseover',
-        defaultWebScreenshot.getAttribute('onmouseover') ?? ''
-      );
-      image.setAttribute(
-        'onmouseout',
-        defaultWebScreenshot.getAttribute('onmouseout') ?? ''
-      );
+      if (defaultWebScreenshot) {
+        image.setAttribute(
+          'onmouseover',
+          defaultWebScreenshot.getAttribute('onmouseover') ?? ''
+        );
+        image.setAttribute(
+          'onmouseout',
+          defaultWebScreenshot.getAttribute('onmouseout') ?? ''
+        );
+      }
       cell.innerHTML = '';
       cell.appendChild(image);
       cell.setAttribute('bearbit-screenshot', 'preview');
@@ -211,14 +213,16 @@ async function addScreenshotImageToCell(cell: HTMLTableCellElement) {
         image.onclick = () => {
           openScreenshotModal(imageUrl);
         };
-        image.setAttribute(
-          'onmouseover',
-          defaultWebScreenshot.getAttribute('onmouseover') ?? ''
-        );
-        image.setAttribute(
-          'onmouseout',
-          defaultWebScreenshot.getAttribute('onmouseout') ?? ''
-        );
+        if (defaultWebScreenshot) {
+          image.setAttribute(
+            'onmouseover',
+            defaultWebScreenshot.getAttribute('onmouseover') ?? ''
+          );
+          image.setAttribute(
+            'onmouseout',
+            defaultWebScreenshot.getAttribute('onmouseout') ?? ''
+          );
+        }
         cell.innerHTML = '';
         cell.appendChild(image);
         cell.setAttribute('bearbit-screenshot', 'preview');
@@ -396,6 +400,12 @@ function disableDefaultWebScreenshot() {
   if (button) {
     button.style.display = 'none';
   }
+
+  // modify screenshot preview card to support blur nsfw
+  const card = document.getElementById('preview-card');
+  if (card) {
+    card.setAttribute('bearbit-screenshot', 'preview');
+  }
 }
 
 function enableDefaultWebScreenshot() {
@@ -406,6 +416,12 @@ function enableDefaultWebScreenshot() {
   if (button) {
     button.innerText = 'ซ่อนรูปภาพ';
     button.style.display = 'inline-block';
+  }
+
+  // modify screenshot preview card to support blur nsfw
+  const card = document.getElementById('preview-card');
+  if (card) {
+    card.setAttribute('bearbit-screenshot', 'preview');
   }
 }
 
