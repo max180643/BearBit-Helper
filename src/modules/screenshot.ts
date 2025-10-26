@@ -21,14 +21,37 @@ function enableScreenshot(blurNsfw: boolean) {
     path === '/viewno18sbx.php' ||
     path === '/viewbrsb.php'
   ) {
+    disableDefaultWebScreenshot();
     prepareScreenshotModal();
     fixCameraIconNoAttribute();
 
-    const table = document.querySelector(
-      '[title="รูปภาพตัวอย่าง"], [title="รูปภาพ"]'
-    )?.parentNode?.parentNode?.parentNode?.parentNode?.parentNode;
+    const cameraIcons = Array.from(
+      document.querySelectorAll('[title="รูปภาพตัวอย่าง"], [title="รูปภาพ"]')
+    );
 
-    insertScreenshotCellInTable(table as HTMLTableElement);
+    const tables = new Set<HTMLTableElement>();
+
+    cameraIcons.forEach(icon => {
+      let node: Node | null = icon;
+      // walk up the tree to find the enclosing TABLE element
+      while (node && node.nodeName !== 'HTML') {
+        if ((node as HTMLElement).tagName === 'TABLE') {
+          tables.add(node as HTMLTableElement);
+          break;
+        }
+        node = node.parentNode;
+      }
+    });
+
+    // fallback: keep original single-table behaviour if nothing found
+    if (tables.size === 0) {
+      const fallbackTable = document.querySelector(
+        '[title="รูปภาพตัวอย่าง"], [title="รูปภาพ"]'
+      )?.parentNode?.parentNode?.parentNode?.parentNode?.parentNode;
+      if (fallbackTable) tables.add(fallbackTable as HTMLTableElement);
+    }
+
+    tables.forEach(table => insertScreenshotCellInTable(table));
 
     if (blurNsfw) {
       enableBlurNsfw();
@@ -46,6 +69,8 @@ function disableScreenshot() {
     path === '/viewno18sbx.php' ||
     path === '/viewbrsb.php'
   ) {
+    enableDefaultWebScreenshot();
+
     const screenshots = document.querySelectorAll(
       '[bearbit-helper="screenshot"]'
     );
@@ -138,6 +163,9 @@ function addScreenshotImage() {
 
 async function addScreenshotImageToCell(cell: HTMLTableCellElement) {
   const tableRow = cell?.parentNode as HTMLElement;
+  const defaultWebScreenshot = tableRow.querySelector(
+    'td.poster-column > img'
+  ) as HTMLImageElement;
   const cameraIcon = tableRow.querySelector(
     '[title="รูปภาพตัวอย่าง"], [title="รูปภาพ"]'
   ) as HTMLElement;
@@ -161,6 +189,14 @@ async function addScreenshotImageToCell(cell: HTMLTableCellElement) {
       image.onclick = () => {
         openScreenshotModal(cache?.image);
       };
+      image.setAttribute(
+        'onmouseover',
+        defaultWebScreenshot.getAttribute('onmouseover') ?? ''
+      );
+      image.setAttribute(
+        'onmouseout',
+        defaultWebScreenshot.getAttribute('onmouseout') ?? ''
+      );
       cell.innerHTML = '';
       cell.appendChild(image);
       cell.setAttribute('bearbit-screenshot', 'preview');
@@ -175,6 +211,14 @@ async function addScreenshotImageToCell(cell: HTMLTableCellElement) {
         image.onclick = () => {
           openScreenshotModal(imageUrl);
         };
+        image.setAttribute(
+          'onmouseover',
+          defaultWebScreenshot.getAttribute('onmouseover') ?? ''
+        );
+        image.setAttribute(
+          'onmouseout',
+          defaultWebScreenshot.getAttribute('onmouseout') ?? ''
+        );
         cell.innerHTML = '';
         cell.appendChild(image);
         cell.setAttribute('bearbit-screenshot', 'preview');
@@ -341,6 +385,27 @@ function closeScreenshotModal() {
   if (modal && image) {
     (image as HTMLImageElement).src = '';
     modal.style.display = 'none';
+  }
+}
+
+function disableDefaultWebScreenshot() {
+  const html = document.querySelector('html');
+  html?.classList.add('hide-posters');
+
+  const button = document.getElementById('toggle-posters-btn');
+  if (button) {
+    button.style.display = 'none';
+  }
+}
+
+function enableDefaultWebScreenshot() {
+  const html = document.querySelector('html');
+  html?.classList.remove('hide-posters');
+
+  const button = document.getElementById('toggle-posters-btn');
+  if (button) {
+    button.innerText = 'ซ่อนรูปภาพ';
+    button.style.display = 'inline-block';
   }
 }
 
