@@ -23,6 +23,15 @@ async function enableDownloadButton(): Promise<void> {
       if (torrentDetailUrl.includes('/details.php')) {
         const torrentDetails = extractDetailsUrlParameter(torrentDetailUrl);
         if (torrentDetailUrl && torrentDetails.torrentId) {
+          // remove vip text
+          const vipSection = detail.parentNode?.querySelector(
+            'div > div'
+          ) as HTMLDivElement;
+          if (vipSection.innerText === '(ปุ่มดาวน์โหลดสำหรับ VIP เท่านั้น)') {
+            vipSection.innerText = '';
+          }
+
+          // append download+ button
           (detail.parentNode as HTMLElement).appendChild(
             generateDownloadButton(torrentDetailUrl, torrentDetails.torrentId)
           );
