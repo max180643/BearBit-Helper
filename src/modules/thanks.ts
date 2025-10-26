@@ -97,6 +97,12 @@ async function enableAutoThanks(): Promise<void> {
   }
 }
 
+async function bypassRequiredReadInbox(): Promise<void> {
+  const url = `${window.location.origin}/inbox.php`;
+  const bodyResponse = await fetchData(url);
+  console.log(bodyResponse);
+}
+
 async function sendThanksRequest(torrentId: string): Promise<Response> {
   try {
     const url = `${window.location.origin}/ajax.php?action=say_thanks&id=${torrentId}`;
@@ -107,4 +113,4 @@ async function sendThanksRequest(torrentId: string): Promise<Response> {
   }
 }
 
-export { enableAutoThanks, sendThanksRequest };
+export { enableAutoThanks, sendThanksRequest, bypassRequiredReadInbox };

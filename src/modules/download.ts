@@ -8,7 +8,7 @@ import {
 } from '../utils/cache';
 import { fetchData, parseDocument, responseTextDecode } from '../utils/http';
 import { extractDetailsUrlParameter } from '../utils/url';
-import { sendThanksRequest } from './thanks';
+import { sendThanksRequest, bypassRequiredReadInbox } from './thanks';
 
 async function enableDownloadButton(): Promise<void> {
   const path = window.location.pathname;
@@ -98,6 +98,7 @@ async function thanksAndDownload(
   if (cache) {
     // check thank
     if (cache?.isThanks === 0) {
+      await bypassRequiredReadInbox();
       // send thanks request
       const response = await sendThanksRequest(torrentId);
       if (response.ok) {
@@ -143,6 +144,7 @@ async function thanksAndDownload(
     };
     addCacheData(cacheData, CACHE_DEFAULT_EXPIRE, DB_TORRENT_OBJECT_NAME);
 
+    await bypassRequiredReadInbox();
     // send thanks request
     const response = await sendThanksRequest(torrentId);
     if (response.ok) {
