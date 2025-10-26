@@ -79,4 +79,23 @@ function disableBlurNsfw() {
   }
 }
 
-export { enableBlurNsfw, disableBlurNsfw };
+function addBlurNsfwPreviewCard() {
+  const previewCard = document.getElementById('card-poster');
+  if (previewCard) {
+    previewCard.style.filter = 'blur(5px)';
+  }
+}
+
+function removeBlurNsfwPreviewCard() {
+  const previewCard = document.getElementById('card-poster');
+  if (previewCard) {
+    previewCard.style.removeProperty('filter');
+  }
+}
+
+export {
+  enableBlurNsfw,
+  disableBlurNsfw,
+  addBlurNsfwPreviewCard,
+  removeBlurNsfwPreviewCard
+};

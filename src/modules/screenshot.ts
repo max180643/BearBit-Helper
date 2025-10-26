@@ -8,7 +8,11 @@ import {
 } from '../utils/cache';
 import { convertBlobToBase64, fetchImage } from '../utils/http';
 import { extractDetailsUrlParameter } from '../utils/url';
-import { enableBlurNsfw } from './nsfw';
+import {
+  addBlurNsfwPreviewCard,
+  enableBlurNsfw,
+  removeBlurNsfwPreviewCard
+} from './nsfw';
 
 const allowedExtensions = ['jpg', 'jpeg', 'png', 'gif'];
 
@@ -190,14 +194,22 @@ async function addScreenshotImageToCell(cell: HTMLTableCellElement) {
         openScreenshotModal(cache?.image);
       };
       if (defaultWebScreenshot) {
-        image.setAttribute(
-          'onmouseover',
-          defaultWebScreenshot.getAttribute('onmouseover') ?? ''
-        );
-        image.setAttribute(
-          'onmouseout',
-          defaultWebScreenshot.getAttribute('onmouseout') ?? ''
-        );
+        image.onmouseover = () => {
+          const hasNsfwBlur = image.style.filter.includes('blur');
+          if (hasNsfwBlur) {
+            addBlurNsfwPreviewCard();
+          } else {
+            removeBlurNsfwPreviewCard();
+          }
+          defaultWebScreenshot.dispatchEvent(
+            new MouseEvent('mouseover', { bubbles: true, cancelable: true })
+          );
+        };
+        image.onmouseout = () => {
+          defaultWebScreenshot.dispatchEvent(
+            new MouseEvent('mouseout', { bubbles: true, cancelable: true })
+          );
+        };
       }
       cell.innerHTML = '';
       cell.appendChild(image);
@@ -214,14 +226,22 @@ async function addScreenshotImageToCell(cell: HTMLTableCellElement) {
           openScreenshotModal(imageUrl);
         };
         if (defaultWebScreenshot) {
-          image.setAttribute(
-            'onmouseover',
-            defaultWebScreenshot.getAttribute('onmouseover') ?? ''
-          );
-          image.setAttribute(
-            'onmouseout',
-            defaultWebScreenshot.getAttribute('onmouseout') ?? ''
-          );
+          image.onmouseover = () => {
+            const hasNsfwBlur = image.style.filter.includes('blur');
+            if (hasNsfwBlur) {
+              addBlurNsfwPreviewCard();
+            } else {
+              removeBlurNsfwPreviewCard();
+            }
+            defaultWebScreenshot.dispatchEvent(
+              new MouseEvent('mouseover', { bubbles: true, cancelable: true })
+            );
+          };
+          image.onmouseout = () => {
+            defaultWebScreenshot.dispatchEvent(
+              new MouseEvent('mouseout', { bubbles: true, cancelable: true })
+            );
+          };
         }
         cell.innerHTML = '';
         cell.appendChild(image);
@@ -400,12 +420,6 @@ function disableDefaultWebScreenshot() {
   if (button) {
     button.style.display = 'none';
   }
-
-  // modify screenshot preview card to support blur nsfw
-  const card = document.getElementById('preview-card');
-  if (card) {
-    card.setAttribute('bearbit-screenshot', 'preview');
-  }
 }
 
 function enableDefaultWebScreenshot() {
@@ -416,12 +430,6 @@ function enableDefaultWebScreenshot() {
   if (button) {
     button.innerText = 'ซ่อนรูปภาพ';
     button.style.display = 'inline-block';
-  }
-
-  // modify screenshot preview card to support blur nsfw
-  const card = document.getElementById('preview-card');
-  if (card) {
-    card.setAttribute('bearbit-screenshot', 'preview');
   }
 }
 
